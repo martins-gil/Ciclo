@@ -138,7 +138,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.status(200).json({ ok: true })
   } catch {
-    res.status(500).json({ error: 'Não foi possível importar. Verifica se o ficheiro é um backup válido do Ciclo.' })
+    res.status(500).json({ error: 'Não foi possível importar. Verifica se o ficheiro é um backup válido do FoldWise.' })
   }
 }
 

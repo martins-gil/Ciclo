@@ -82,7 +82,7 @@ export default function SettingsScreen() {
       await queryClient.invalidateQueries()
       setImportMessage('Dados importados com sucesso.')
     } catch (e) {
-      setImportMessage('Não foi possível importar o ficheiro. Verifica se é um backup válido do Ciclo.')
+      setImportMessage('Não foi possível importar o ficheiro. Verifica se é um backup válido do FoldWise.')
     }
   }
 

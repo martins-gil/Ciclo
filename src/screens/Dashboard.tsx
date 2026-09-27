@@ -56,7 +56,7 @@ export default function Dashboard({ onAdd }: { onAdd: () => void }) {
     <div className="safe-top px-4">
       <header className="flex items-center justify-between pt-6 pb-4">
         <div>
-          <h1 className="text-xl font-bold">Ciclo</h1>
+          <h1 className="text-xl font-bold">FoldWise</h1>
           <p className="text-sm text-slate-400">{formatCycleLabel(cycle)}</p>
         </div>
         <div className="text-right">

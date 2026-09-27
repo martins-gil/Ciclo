@@ -1,4 +1,4 @@
-# Ciclo
+# FoldWise
 
 Personal expense tracker PWA, hosted on Vercel with a Neon Postgres database.
 Single shared password gate (no per-user accounts). Budgeting runs on a

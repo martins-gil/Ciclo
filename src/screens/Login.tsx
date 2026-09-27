@@ -21,7 +21,7 @@ export default function Login() {
       <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white">
         <Lock size={26} />
       </div>
-      <h1 className="mb-1 text-xl font-bold text-slate-900">Ciclo</h1>
+      <h1 className="mb-1 text-xl font-bold text-slate-900">FoldWise</h1>
       <p className="mb-6 text-sm text-slate-400">Introduz a palavra-passe para continuar</p>
 
       <form onSubmit={handleSubmit} className="w-full max-w-xs space-y-3">

@@ -1,4 +1,4 @@
-// Generates simple placeholder PWA icons (a ring motif for "Ciclo") using only
+// Generates simple placeholder PWA icons (a ring motif for "FoldWise") using only
 // Node's built-in zlib — no image library dependency. Replace public/icons/*.png
 // with real branding whenever you like; the manifest just points at those files.
 const zlib = require('zlib')
