@@ -14,3 +14,6 @@ vite.config.d.ts
 
 # Vercel CLI project link + local cache
 .vercel
+
+.vercel
+.env*

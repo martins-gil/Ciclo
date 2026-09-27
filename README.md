@@ -23,12 +23,15 @@ Create a `.env` file in the project root (gitignored) with:
 ```
 DATABASE_URL="<your Neon pooled connection string>"
 SESSION_SECRET="<any random string>"
-ADMIN_PASSWORD_HASH="<bcrypt hash of your chosen password>"
 ```
-Generate the password hash with:
+Then set (or later change) your login password with:
 ```bash
-node -e "console.log(require('bcryptjs').hashSync('your-password', 10))"
+node scripts/set-password.cjs 'your-password'
 ```
+This writes `ADMIN_PASSWORD_HASH` into `.env` directly — don't set that value
+by hand in a shell, since bcrypt hashes contain `$` characters that
+PowerShell (and some shells) will silently mangle if the value passes
+through a string it interpolates.
 
 Run the initial migration once against your Neon database:
 ```bash

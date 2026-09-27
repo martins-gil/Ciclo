@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { prisma } from './_lib/db'
-import { requireAuth } from './_lib/auth'
+import { prisma } from './_lib/db.js'
+import { requireAuth } from './_lib/auth.js'
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {

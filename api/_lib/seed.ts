@@ -1,4 +1,4 @@
-import { prisma } from './db'
+import { prisma } from './db.js'
 
 const SEED_ENVELOPES = [
   { name: 'Casa', monthlyCap: 700, passthrough: false, order: 0 },

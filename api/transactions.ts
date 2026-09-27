@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { prisma } from './_lib/db'
-import { ensureSeeded } from './_lib/seed'
-import { requireAuth } from './_lib/auth'
+import { prisma } from './_lib/db.js'
+import { ensureSeeded } from './_lib/seed.js'
+import { requireAuth } from './_lib/auth.js'
 import type { Transaction as PrismaTransaction } from '@prisma/client'
 
 // createdAt is BIGINT in Postgres (Prisma -> JS `bigint`), which JSON.stringify
