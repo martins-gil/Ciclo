@@ -1,44 +1,61 @@
 import { useRef, useState } from 'react'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { db } from '../db/db'
-import { SETTINGS_ID } from '../db/types'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  getEnvelopes,
+  getPots,
+  updateEnvelopeCap as apiUpdateEnvelopeCap,
+  updatePotTarget as apiUpdatePotTarget,
+  updateSettings as apiUpdateSettings,
+  exportData,
+  importData
+} from '../api/client'
 import { useSettings } from '../hooks/useSettings'
-import { Download, Upload } from 'lucide-react'
+import { useAuth } from '../hooks/useAuth'
+import { Download, Upload, LogOut } from 'lucide-react'
 
 export default function SettingsScreen() {
+  const queryClient = useQueryClient()
+  const { logout } = useAuth()
   const settings = useSettings()
-  const envelopes = useLiveQuery(() => db.envelopes.orderBy('order').toArray(), []) ?? []
-  const pots = useLiveQuery(() => db.pots.orderBy('order').toArray(), []) ?? []
+  const envelopes = useQuery({ queryKey: ['envelopes'], queryFn: getEnvelopes }).data ?? []
+  const pots = useQuery({ queryKey: ['pots'], queryFn: getPots }).data ?? []
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [importMessage, setImportMessage] = useState<string | null>(null)
 
-  async function updateCycleStartDay(value: number) {
+  const settingsMutation = useMutation({
+    mutationFn: apiUpdateSettings,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['settings'] })
+  })
+  const envelopeCapMutation = useMutation({
+    mutationFn: ({ id, monthlyCap }: { id: number; monthlyCap: number }) => apiUpdateEnvelopeCap(id, monthlyCap),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['envelopes'] })
+  })
+  const potTargetMutation = useMutation({
+    mutationFn: ({ id, target }: { id: number; target: number | null }) => apiUpdatePotTarget(id, target),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['pots'] })
+  })
+
+  function updateCycleStartDay(value: number) {
     if (Number.isNaN(value) || value < 1 || value > 28) return
-    await db.settings.update(SETTINGS_ID, { cycleStartDay: value })
+    settingsMutation.mutate({ cycleStartDay: value })
   }
 
-  async function updateBaseIncomeDefault(value: number) {
+  function updateBaseIncomeDefault(value: number) {
     if (Number.isNaN(value) || value < 0) return
-    await db.settings.update(SETTINGS_ID, { baseIncomeDefault: value })
+    settingsMutation.mutate({ baseIncomeDefault: value })
   }
 
-  async function updateEnvelopeCap(id: number, cap: number) {
+  function updateEnvelopeCap(id: number, cap: number) {
     if (Number.isNaN(cap) || cap < 0) return
-    await db.envelopes.update(id, { monthlyCap: cap })
+    envelopeCapMutation.mutate({ id, monthlyCap: cap })
   }
 
-  async function updatePotTarget(id: number, target: number | null) {
-    await db.pots.update(id, { target })
+  function updatePotTarget(id: number, target: number | null) {
+    potTargetMutation.mutate({ id, target })
   }
 
   async function handleExport() {
-    const data = {
-      exportedAt: new Date().toISOString(),
-      envelopes: await db.envelopes.toArray(),
-      pots: await db.pots.toArray(),
-      transactions: await db.transactions.toArray(),
-      settings: await db.settings.toArray()
-    }
+    const data = await exportData()
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -61,26 +78,8 @@ export default function SettingsScreen() {
       )
       if (!confirmed) return
 
-      await db.transaction('rw', db.envelopes, db.pots, db.transactions, db.settings, async () => {
-        await db.envelopes.clear()
-        await db.pots.clear()
-        await db.transactions.clear()
-        await db.settings.clear()
-        await db.envelopes.bulkAdd(data.envelopes)
-        await db.pots.bulkAdd(data.pots)
-        await db.transactions.bulkAdd(data.transactions)
-        if (Array.isArray(data.settings) && data.settings.length > 0) {
-          await db.settings.bulkAdd(data.settings)
-        } else {
-          await db.settings.add({
-            id: SETTINGS_ID,
-            cycleStartDay: 21,
-            currency: 'EUR',
-            locale: 'pt-PT',
-            baseIncomeDefault: 0
-          })
-        }
-      })
+      await importData(data)
+      await queryClient.invalidateQueries()
       setImportMessage('Dados importados com sucesso.')
     } catch (e) {
       setImportMessage('Não foi possível importar o ficheiro. Verifica se é um backup válido do Ciclo.')
@@ -162,7 +161,7 @@ export default function SettingsScreen() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-4">
+      <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-4">
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Dados</h2>
         <div className="flex gap-2">
           <button
@@ -193,6 +192,14 @@ export default function SettingsScreen() {
         </div>
         {importMessage && <p className="mt-3 text-sm text-slate-500">{importMessage}</p>}
       </section>
+
+      <button
+        onClick={logout}
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white py-3 text-sm font-medium text-slate-500"
+      >
+        <LogOut size={16} />
+        Sair
+      </button>
     </div>
   )
 }

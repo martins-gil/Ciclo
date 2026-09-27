@@ -1,5 +1,5 @@
-import { useLiveQuery } from 'dexie-react-hooks'
-import { db } from '../db/db'
+import { useQuery } from '@tanstack/react-query'
+import { getSettings } from '../api/client'
 import { SETTINGS_ID, type Settings } from '../db/types'
 
 const FALLBACK: Settings = {
@@ -11,6 +11,6 @@ const FALLBACK: Settings = {
 }
 
 export function useSettings(): Settings {
-  const settings = useLiveQuery(() => db.settings.get(SETTINGS_ID), [])
-  return settings ?? FALLBACK
+  const { data } = useQuery({ queryKey: ['settings'], queryFn: getSettings })
+  return data ?? FALLBACK
 }

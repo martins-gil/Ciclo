@@ -1,5 +1,5 @@
-import { useLiveQuery } from 'dexie-react-hooks'
-import { db } from '../db/db'
+import { useQuery } from '@tanstack/react-query'
+import { getPots, getTransactions } from '../api/client'
 import { useSettings } from '../hooks/useSettings'
 import { computePotProjection } from '../lib/projection'
 import ProgressBar from '../components/ProgressBar'
@@ -13,8 +13,8 @@ const KIND_LABELS: Record<string, string> = {
 
 export default function PotsDetail() {
   const settings = useSettings()
-  const pots = useLiveQuery(() => db.pots.orderBy('order').toArray(), []) ?? []
-  const allTransactions = useLiveQuery(() => db.transactions.toArray(), []) ?? []
+  const pots = useQuery({ queryKey: ['pots'], queryFn: getPots }).data ?? []
+  const allTransactions = useQuery({ queryKey: ['transactions'], queryFn: getTransactions }).data ?? []
 
   const activePots = pots.filter((p) => !p.archived)
 

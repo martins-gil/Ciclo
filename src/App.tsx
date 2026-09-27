@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
-import { ensureSeeded } from './db/db'
+import { useState } from 'react'
+import { useAuth } from './hooks/useAuth'
+import Login from './screens/Login'
 import Dashboard from './screens/Dashboard'
 import PotsDetail from './screens/PotsDetail'
 import CycleHistory from './screens/CycleHistory'
@@ -11,21 +12,21 @@ import { LayoutGrid, Wallet, History, Settings as SettingsIcon, Plus } from 'luc
 type Tab = 'dashboard' | 'pots' | 'cycles' | 'settings'
 
 export default function App() {
-  const [ready, setReady] = useState(false)
+  const { isAuthenticated, isCheckingAuth } = useAuth()
   const [tab, setTab] = useState<Tab>('dashboard')
   const [cyclesSubTab, setCyclesSubTab] = useState<'history' | 'reports'>('history')
   const [addOpen, setAddOpen] = useState(false)
 
-  useEffect(() => {
-    ensureSeeded().then(() => setReady(true))
-  }, [])
-
-  if (!ready) {
+  if (isCheckingAuth) {
     return (
       <div className="flex h-screen items-center justify-center text-slate-400 text-sm">
         A carregar…
       </div>
     )
+  }
+
+  if (!isAuthenticated) {
+    return <Login />
   }
 
   return (

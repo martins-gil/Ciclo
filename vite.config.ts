@@ -2,9 +2,9 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// Deployed to GitHub Pages at https://martins-gil.github.io/Ciclo/, so every
-// asset/route needs the /Ciclo/ prefix baked in — that's what `base` does.
-const base = '/Ciclo/'
+// Deployed to Vercel at the project root (no subpath), unlike the earlier
+// GitHub Pages setup.
+const base = '/'
 
 export default defineConfig({
   base,

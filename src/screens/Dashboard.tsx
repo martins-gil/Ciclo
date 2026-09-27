@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { db } from '../db/db'
+import { useQuery } from '@tanstack/react-query'
+import { getEnvelopes, getPots, getTransactions } from '../api/client'
 import { useSettings } from '../hooks/useSettings'
 import { getCurrentCycle, daysRemainingInCycle, formatCycleLabel, totalDaysInCycle } from '../lib/cycle'
 import {
@@ -17,9 +17,14 @@ import { formatCurrency } from '../lib/currency'
 
 export default function Dashboard({ onAdd }: { onAdd: () => void }) {
   const settings = useSettings()
-  const envelopes = useLiveQuery(() => db.envelopes.orderBy('order').toArray(), []) ?? []
-  const pots = useLiveQuery(() => db.pots.orderBy('order').toArray(), []) ?? []
-  const allTransactions = useLiveQuery(() => db.transactions.toArray(), []) ?? []
+  const envelopesQuery = useQuery({ queryKey: ['envelopes'], queryFn: getEnvelopes })
+  const potsQuery = useQuery({ queryKey: ['pots'], queryFn: getPots })
+  const transactionsQuery = useQuery({ queryKey: ['transactions'], queryFn: getTransactions })
+
+  const envelopes = envelopesQuery.data ?? []
+  const pots = potsQuery.data ?? []
+  const allTransactions = transactionsQuery.data ?? []
+  const hasError = envelopesQuery.isError || potsQuery.isError || transactionsQuery.isError
 
   const cycle = useMemo(() => getCurrentCycle(settings.cycleStartDay), [settings.cycleStartDay])
   const cycleTx = useMemo(() => transactionsInCycle(allTransactions, cycle), [allTransactions, cycle])
@@ -37,6 +42,15 @@ export default function Dashboard({ onAdd }: { onAdd: () => void }) {
 
   const baseIncome = income.base > 0 ? income.base : settings.baseIncomeDefault
   const safeToday = computeSafeToSpendToday(baseIncome, committedCaps, daysRemaining)
+
+  if (hasError) {
+    return (
+      <div className="safe-top flex min-h-screen flex-col items-center justify-center px-6 text-center">
+        <p className="mb-1 text-sm font-medium text-slate-600">Sem ligação</p>
+        <p className="text-sm text-slate-400">Não foi possível carregar os dados. Verifica a tua ligação à internet.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="safe-top px-4">

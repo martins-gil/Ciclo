@@ -6,3 +6,11 @@ dist-ssr
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
+
+# secrets / local env — never commit these
+.env
+.env.*
+!.env.example
+
+# Vercel CLI project link + local cache
+.vercel

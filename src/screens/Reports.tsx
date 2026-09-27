@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { useLiveQuery } from 'dexie-react-hooks'
+import { useQuery } from '@tanstack/react-query'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { db } from '../db/db'
+import { getEnvelopes, getTransactions } from '../api/client'
 import { useSettings } from '../hooks/useSettings'
 import { cycleIdToRange, listCycleIdsSince } from '../lib/cycle'
 import { format } from 'date-fns'
@@ -28,8 +28,8 @@ export default function Reports({
   activeSubTab: 'history' | 'reports'
 }) {
   const settings = useSettings()
-  const envelopes = useLiveQuery(() => db.envelopes.orderBy('order').toArray(), []) ?? []
-  const allTransactions = useLiveQuery(() => db.transactions.toArray(), []) ?? []
+  const envelopes = useQuery({ queryKey: ['envelopes'], queryFn: getEnvelopes }).data ?? []
+  const allTransactions = useQuery({ queryKey: ['transactions'], queryFn: getTransactions }).data ?? []
   const activeEnvelopes = envelopes.filter((e) => !e.archived)
 
   const cycleIds = useMemo(() => {

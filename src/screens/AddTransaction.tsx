@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { db } from '../db/db'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getEnvelopes, getPots, getTransactions, addTransaction } from '../api/client'
 import type { Transaction, TransactionType } from '../db/types'
 import { X, Check } from 'lucide-react'
 import { unlinkedPendingReimbursements } from '../lib/aggregate'
@@ -31,11 +31,19 @@ function todayStr(): string {
 }
 
 export default function AddTransaction({ onClose }: { onClose: () => void }) {
-  const allEnvelopes = useLiveQuery(() => db.envelopes.orderBy('order').toArray(), []) ?? []
-  const allPots = useLiveQuery(() => db.pots.orderBy('order').toArray(), []) ?? []
-  const allTransactions = useLiveQuery(() => db.transactions.toArray(), []) ?? []
+  const queryClient = useQueryClient()
+  const allEnvelopes = useQuery({ queryKey: ['envelopes'], queryFn: getEnvelopes }).data ?? []
+  const allPots = useQuery({ queryKey: ['pots'], queryFn: getPots }).data ?? []
+  const allTransactions = useQuery({ queryKey: ['transactions'], queryFn: getTransactions }).data ?? []
   const envelopes = useMemo(() => allEnvelopes.filter((e) => !e.archived), [allEnvelopes])
   const pots = useMemo(() => allPots.filter((p) => !p.archived), [allPots])
+
+  const addTransactionMutation = useMutation({
+    mutationFn: addTransaction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] })
+    }
+  })
 
   const [date, setDate] = useState(todayStr())
   const [amount, setAmount] = useState('')
@@ -87,12 +95,11 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
     setSaving(true)
     setError(null)
     try {
-      const base: Transaction = {
+      const base: Omit<Transaction, 'id' | 'createdAt'> = {
         date,
         amount: Math.round(amountNum * 100) / 100,
         description: description.trim(),
-        type,
-        createdAt: Date.now()
+        type
       }
       if (type === 'spend') {
         base.envelopeId = envelopeId
@@ -110,7 +117,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
         base.potId = potId
         base.linkedTransactionId = linkedTransactionId
       }
-      await db.transactions.add(base)
+      await addTransactionMutation.mutateAsync(base)
       onClose()
     } catch (e) {
       setError('Não foi possível guardar. Tenta novamente.')

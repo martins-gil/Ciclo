@@ -1,0 +1,78 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Envelope {
+  id           Int      @id @default(autoincrement())
+  name         String
+  monthlyCap   Float
+  passthrough  Boolean  @default(false)
+  order        Int
+  archived     Boolean  @default(false)
+  transactions Transaction[]
+
+  @@map("envelopes")
+}
+
+enum PotKind {
+  spending
+  goal
+  buffer
+}
+
+model Pot {
+  id       Int     @id @default(autoincrement())
+  name     String
+  kind     PotKind
+  target   Float?
+  order    Int
+  archived Boolean @default(false)
+
+  sourceTransactions Transaction[] @relation("SourcePot")
+  destTransactions   Transaction[] @relation("DestPot")
+
+  @@map("pots")
+}
+
+enum TransactionType {
+  spend
+  transfer
+  reimbursement_pending
+  reimbursement_received
+  income
+}
+
+model Transaction {
+  id                   Int             @id @default(autoincrement())
+  date                 String // YYYY-MM-DD
+  amount               Float
+  description          String
+  type                 TransactionType
+  envelopeId           Int?
+  envelope             Envelope?       @relation(fields: [envelopeId], references: [id], onDelete: SetNull)
+  potId                Int?
+  pot                  Pot?            @relation("SourcePot", fields: [potId], references: [id], onDelete: SetNull)
+  toPotId              Int?
+  toPot                Pot?            @relation("DestPot", fields: [toPotId], references: [id], onDelete: SetNull)
+  isBaseIncome         Boolean?
+  linkedTransactionId  Int?
+  createdAt            BigInt
+
+  @@map("transactions")
+}
+
+model Settings {
+  id                Int    @id @default(autoincrement())
+  cycleStartDay     Int    @default(21)
+  currency          String @default("EUR")
+  locale            String @default("pt-PT")
+  baseIncomeDefault Float  @default(0)
+
+  @@map("settings")
+}
