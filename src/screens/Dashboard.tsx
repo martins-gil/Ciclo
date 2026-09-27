@@ -12,8 +12,9 @@ import {
   computeSafeToSpendToday,
   computeRealSpendTotal
 } from '../lib/aggregate'
-import ProgressBar from '../components/ProgressBar'
+import ProgressBar, { BudgetBar } from '../components/ProgressBar'
 import { formatCurrency } from '../lib/currency'
+import { Wallet } from 'lucide-react'
 
 export default function Dashboard({ onAdd }: { onAdd: () => void }) {
   const settings = useSettings()
@@ -66,10 +67,15 @@ export default function Dashboard({ onAdd }: { onAdd: () => void }) {
       </header>
 
       {/* Safe to spend today */}
-      <section className="mb-6 rounded-3xl bg-indigo-600 p-5 text-white">
-        <p className="text-sm text-indigo-100">Seguro gastar hoje</p>
-        <p className="mt-1 text-4xl font-bold tabular-nums">{formatCurrency(safeToday)}</p>
-        <p className="mt-2 text-xs text-indigo-100">
+      <section className="mb-6 rounded-3xl bg-yellow-400 p-5 text-slate-900">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium text-slate-700">Seguro gastar hoje</p>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/40">
+            <Wallet size={16} />
+          </div>
+        </div>
+        <p className="mt-1 text-4xl font-extrabold tabular-nums">{formatCurrency(safeToday)}</p>
+        <p className="mt-2 text-xs text-slate-700">
           Rendimento base ({formatCurrency(baseIncome)}) − envelopes comprometidos (
           {formatCurrency(committedCaps)}) ÷ {daysRemaining} dias
         </p>
@@ -100,7 +106,7 @@ export default function Dashboard({ onAdd }: { onAdd: () => void }) {
                   {formatCurrency(spent)} / {formatCurrency(cap)}
                 </span>
               </div>
-              <ProgressBar pct={pct} />
+              <BudgetBar pct={pct} />
               <p className={`mt-1.5 text-xs ${remaining < 0 ? 'text-red-500' : 'text-slate-400'}`}>
                 {remaining >= 0
                   ? `${formatCurrency(remaining)} restante`

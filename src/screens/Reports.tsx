@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { getEnvelopes, getTransactions } from '../api/client'
@@ -10,6 +10,11 @@ import { transactionsInCycle, computeEnvelopeSpend } from '../lib/aggregate'
 import { formatCurrency } from '../lib/currency'
 import SubTabHeader from '../components/SubTabHeader'
 import { TrendingUp } from 'lucide-react'
+
+type Range = '1m' | '3m' | '6m' | '1y'
+
+const RANGE_CYCLES: Record<Range, number> = { '1m': 1, '3m': 3, '6m': 6, '1y': 12 }
+const RANGE_LABELS: Record<Range, string> = { '1m': '1M', '3m': '3M', '6m': '6M', '1y': '1A' }
 
 function countTrailingIncreases(series: number[]): number {
   let count = 0
@@ -31,6 +36,7 @@ export default function Reports({
   const envelopes = useQuery({ queryKey: ['envelopes'], queryFn: getEnvelopes }).data ?? []
   const allTransactions = useQuery({ queryKey: ['transactions'], queryFn: getTransactions }).data ?? []
   const activeEnvelopes = envelopes.filter((e) => !e.archived)
+  const [range, setRange] = useState<Range>('6m')
 
   const cycleIds = useMemo(() => {
     if (allTransactions.length === 0) return listCycleIdsSince(new Date(), settings.cycleStartDay)
@@ -38,7 +44,10 @@ export default function Reports({
     return listCycleIdsSince(new Date(earliest), settings.cycleStartDay)
   }, [allTransactions, settings.cycleStartDay])
 
-  const chronological = [...cycleIds].reverse()
+  const chronological = useMemo(
+    () => [...cycleIds].reverse().slice(-RANGE_CYCLES[range]),
+    [cycleIds, range]
+  )
 
   const series = useMemo(
     () =>
@@ -61,6 +70,20 @@ export default function Reports({
       <h1 className="mb-4 text-xl font-bold">Ciclos</h1>
       <SubTabHeader active={activeSubTab} onChange={onSwitchTab} />
 
+      <div className="mb-4 flex gap-2">
+        {(Object.keys(RANGE_LABELS) as Range[]).map((r) => (
+          <button
+            key={r}
+            onClick={() => setRange(r)}
+            className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition ${
+              range === r ? 'bg-yellow-400 text-slate-900' : 'bg-slate-100 text-slate-500'
+            }`}
+          >
+            {RANGE_LABELS[r]}
+          </button>
+        ))}
+      </div>
+
       <div className="space-y-4 pb-4">
         {series.map(({ envelope, data, flagged }) => (
           <div key={envelope.id} className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -82,7 +105,7 @@ export default function Reports({
                   <Line
                     type="monotone"
                     dataKey="spent"
-                    stroke={flagged ? '#ef4444' : '#4f46e5'}
+                    stroke={flagged ? '#ef4444' : '#10b981'}
                     strokeWidth={2}
                     dot={{ r: 3 }}
                   />

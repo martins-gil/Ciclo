@@ -55,7 +55,7 @@ export default function App() {
           <div className="flex justify-center">
             <button
               onClick={() => setAddOpen(true)}
-              className="-mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 active:scale-95 transition"
+              className="-mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-yellow-400 text-slate-900 shadow-lg shadow-yellow-400/40 active:scale-95 transition"
               aria-label="Adicionar transação"
             >
               <Plus size={26} />
@@ -91,7 +91,7 @@ function NavButton({
     <button
       onClick={onClick}
       className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium ${
-        active ? 'text-indigo-600' : 'text-slate-400'
+        active ? 'text-yellow-600' : 'text-slate-400'
       }`}
     >
       {children}

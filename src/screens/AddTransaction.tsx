@@ -160,7 +160,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
                 onClick={() => selectType(t)}
                 className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium border ${
                   type === t
-                    ? 'bg-indigo-600 text-white border-indigo-600'
+                    ? 'bg-yellow-400 text-slate-900 border-yellow-400'
                     : 'bg-white text-slate-600 border-slate-200'
                 }`}
               >
@@ -183,7 +183,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
             placeholder="0.00"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-3xl font-semibold tabular-nums focus:border-indigo-500 focus:outline-none"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-3xl font-semibold tabular-nums focus:border-yellow-500 focus:outline-none"
           />
         </div>
 
@@ -196,7 +196,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base focus:border-indigo-500 focus:outline-none"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base focus:border-yellow-500 focus:outline-none"
           />
         </div>
 
@@ -210,7 +210,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
             placeholder="Ex: Supermercado Continente"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base focus:border-indigo-500 focus:outline-none"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base focus:border-yellow-500 focus:outline-none"
           />
         </div>
 
@@ -227,7 +227,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
                   onClick={() => setEnvelopeId(e.id!)}
                   className={`rounded-xl border px-3 py-3 text-left text-sm font-medium ${
                     envelopeId === e.id
-                      ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
+                      ? 'bg-yellow-100 border-yellow-400 text-slate-900'
                       : 'bg-white border-slate-200 text-slate-600'
                   }`}
                 >
@@ -252,7 +252,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
                   onClick={() => setPotId(p.id!)}
                   className={`rounded-xl border px-3 py-3 text-left text-sm font-medium ${
                     potId === p.id
-                      ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
+                      ? 'bg-yellow-100 border-yellow-400 text-slate-900'
                       : 'bg-white border-slate-200 text-slate-600'
                   }`}
                 >
@@ -278,7 +278,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
                     onClick={() => (type === 'transfer' ? setToPotId(p.id!) : setPotId(p.id!))}
                     className={`rounded-xl border px-3 py-3 text-left text-sm font-medium ${
                       (type === 'transfer' ? toPotId : potId) === p.id
-                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
+                        ? 'bg-yellow-100 border-yellow-400 text-slate-900'
                         : 'bg-white border-slate-200 text-slate-600'
                     }`}
                   >
@@ -300,7 +300,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
                 onClick={() => setIsBaseIncome(true)}
                 className={`flex-1 rounded-xl border px-3 py-3 text-sm font-medium ${
                   isBaseIncome
-                    ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
+                    ? 'bg-yellow-100 border-yellow-400 text-slate-900'
                     : 'bg-white border-slate-200 text-slate-600'
                 }`}
               >
@@ -310,7 +310,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
                 onClick={() => setIsBaseIncome(false)}
                 className={`flex-1 rounded-xl border px-3 py-3 text-sm font-medium ${
                   !isBaseIncome
-                    ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
+                    ? 'bg-yellow-100 border-yellow-400 text-slate-900'
                     : 'bg-white border-slate-200 text-slate-600'
                 }`}
               >
@@ -336,7 +336,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
                     onClick={() => setLinkedTransactionId(linkedTransactionId === p.id ? null : p.id!)}
                     className={`flex w-full items-center justify-between rounded-xl border px-3 py-3 text-sm ${
                       linkedTransactionId === p.id
-                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
+                        ? 'bg-yellow-100 border-yellow-400 text-slate-900'
                         : 'bg-white border-slate-200 text-slate-600'
                     }`}
                   >
@@ -356,7 +356,7 @@ export default function AddTransaction({ onClose }: { onClose: () => void }) {
         <button
           onClick={handleSave}
           disabled={!canSave || saving}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-4 text-base font-semibold text-white disabled:opacity-40"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-400 py-4 text-base font-semibold text-slate-900 disabled:opacity-40"
         >
           <Check size={20} />
           Guardar

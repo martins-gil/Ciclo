@@ -99,7 +99,7 @@ export default function SettingsScreen() {
           max={28}
           defaultValue={settings.cycleStartDay}
           onBlur={(e) => updateCycleStartDay(parseInt(e.target.value, 10))}
-          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-base focus:border-indigo-500 focus:outline-none"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-base focus:border-yellow-500 focus:outline-none"
         />
         <p className="mt-1 text-xs text-slate-400">Ex: 21 → ciclo corre do dia 21 ao dia 20 do mês seguinte</p>
 
@@ -110,7 +110,7 @@ export default function SettingsScreen() {
           step="0.01"
           defaultValue={settings.baseIncomeDefault}
           onBlur={(e) => updateBaseIncomeDefault(parseFloat(e.target.value))}
-          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-base focus:border-indigo-500 focus:outline-none"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-base focus:border-yellow-500 focus:outline-none"
         />
         <p className="mt-1 text-xs text-slate-400">
           Usado no cálculo de "seguro gastar hoje" quando ainda não há rendimento base lançado no ciclo
@@ -132,7 +132,7 @@ export default function SettingsScreen() {
                 step="0.01"
                 defaultValue={e.monthlyCap}
                 onBlur={(ev) => updateEnvelopeCap(e.id!, parseFloat(ev.target.value))}
-                className="w-24 rounded-lg border border-slate-200 px-2 py-1.5 text-right text-sm focus:border-indigo-500 focus:outline-none"
+                className="w-24 rounded-lg border border-slate-200 px-2 py-1.5 text-right text-sm focus:border-yellow-500 focus:outline-none"
               />
             </div>
           ))}
@@ -154,7 +154,7 @@ export default function SettingsScreen() {
                 onBlur={(ev) =>
                   updatePotTarget(p.id!, ev.target.value === '' ? null : parseFloat(ev.target.value))
                 }
-                className="w-28 rounded-lg border border-slate-200 px-2 py-1.5 text-right text-sm focus:border-indigo-500 focus:outline-none"
+                className="w-28 rounded-lg border border-slate-200 px-2 py-1.5 text-right text-sm focus:border-yellow-500 focus:outline-none"
               />
             </div>
           ))}
